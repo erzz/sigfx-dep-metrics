@@ -1,0 +1,82 @@
+name: "Signal FX Deployment Metrics"
+author: "Sean Erswell-Liljefelt"
+description: "Pings signal FX with a custom metric for tracking deployments"
+branding:
+  color: gray-dark
+  icon: send
+inputs:
+  host:
+    description: "The Signal FX host to send the metric to"
+    required: false
+    default: "https://ingest.eu0.signalfx.com/v2/datapoint"
+  sigfx_token:
+    description: "The Signal FX API token to use for the request"
+    required: false
+    default: ${{ secrets.SIGFX_ORG_TOKEN }}
+  service:
+    description: "The service or team performing the deployment"
+    required: false
+    default: "rpim"
+  application:
+    description: "The application being deployed                          DEFAULT=repo-name"
+    required: false
+    default: ""
+  environment:
+    description: "The environment in which the application was deployed   DEFAULT=branch-name"
+    required: false
+    default: ""
+  status:
+    description: "What stage of the deployment process is occurring"
+    required: true
+    default: ""
+  result:
+    description: "The result of the deployment"
+    required: true
+    default: ""
+  version:
+    description: "The version of the application being deployed           DEFAULT=SHORT_SHA"
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Send Deployment Metric
+      shell: bash
+      env:
+        APPLICATION: ${{ inputs.application}}
+        ENVIRONMENT: ${{ inputs.environment }}
+        SERVICE: ${{ inputs.service }}
+        STATUS: ${{ inputs.status }}
+        RESULT: ${{ inputs.result }}
+        VERSION: ${{ inputs.release_version }}
+      run: |
+        # Use repo name for application if not set
+        if [ -z $APPLICATION ]; then export APPLICATION=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"); fi
+
+        # Use short SHA for version if not set
+        if [ -z $VERSION ]; then export VERSION=${GITHUB_SHA::8}; fi
+
+        # Use ref name for environment if not set
+        if [ -z $ENVIRONMENT ]; then export ENVIRONMENT=${GITHUB_REF##*/}; fi
+        
+        cat <<EOF >> payload.json
+        {
+          "counter": [
+            { "metric": "deployment",
+              "value": 1,
+              "dimensions": {
+                "environment": "production",
+                "application": "$APPLICATION",
+                "service": "$SERVICE",
+                "status": "$STATUS",
+                "result": "$RESULT",
+                "release_version": "${{ env.GITHUB_REF_SLUG_URL }}"
+              }
+            }
+          ]
+        }
+        EOF
+        curl -X POST "${{ inputs.host }}" \
+          -H "Content-Type: application/json" \
+          -H "X-SF-Token: ${{ inputs.sigfx_token }}" \
+          -d @payload.json

@@ -1,0 +1,43 @@
+name: Tests
+on: push
+
+jobs:
+  # <---------------- TEST BASIC CONFIG ------------------>
+  basic:
+    name: Basic
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check out self as repo
+        uses: actions/checkout@v2
+        with:
+          repository: erzz/sigfx-dep-metrics
+          ref: ${{ github.ref }}
+          path: ./.github/actions/self
+
+      - name: Start
+        uses: ./.github/actions/self
+        with:
+          service: dep-metrics
+          status: started
+          result: pending
+
+      - name: Fake deploy
+        id: deploy
+        run: echo "Deployed"
+
+      - name: Finish
+        uses: ./.github/actions/self
+        with:
+          service: dep-metrics
+          status: finished
+          result: ${{ steps.deploy.outcome }}
+
+      - name: Upload Payload
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: payload.json
+          path: payload.json
