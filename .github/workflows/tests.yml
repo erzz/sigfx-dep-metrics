@@ -20,9 +20,17 @@ jobs:
       - name: Start
         uses: ./.github/actions/self
         with:
+          sigfx_token: ${{ secrets.SIGFX_ORG_TOKEN }}
           service: dep-metrics
           status: started
           result: pending
+
+      - name: Upload Payload
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Start Payload
+          path: payload.json
 
       - name: Fake deploy
         id: deploy
@@ -31,6 +39,7 @@ jobs:
       - name: Finish
         uses: ./.github/actions/self
         with:
+          sigfx_token: ${{ secrets.SIGFX_ORG_TOKEN }}
           service: dep-metrics
           status: finished
           result: ${{ steps.deploy.outcome }}
@@ -39,5 +48,5 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: payload.json
+          name: Finish Payload
           path: payload.json
