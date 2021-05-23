@@ -52,7 +52,7 @@ runs:
       run: |
         # remove payload each execution if exists
         if [ -f payload.json ]; then rm -f payload.json; fi
-        
+
         # Use repo name for application if not set
         if [ -z $APPLICATION ]; then export APPLICATION=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"); fi
 
@@ -73,7 +73,7 @@ runs:
                 "service": "$SERVICE",
                 "status": "$STATUS",
                 "result": "$RESULT",
-                "release_version": "${{ env.GITHUB_REF_SLUG_URL }}"
+                "release_version": "$VERSION"
               }
             }
           ]
