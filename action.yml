@@ -11,8 +11,8 @@ inputs:
     default: "https://ingest.eu0.signalfx.com/v2/datapoint"
   sigfx_token:
     description: "The Signal FX API token to use for the request"
-    required: false
-    default: ${{ secrets.SIGFX_ORG_TOKEN }}
+    required: true
+    default: ""
   service:
     description: "The service or team performing the deployment"
     required: false

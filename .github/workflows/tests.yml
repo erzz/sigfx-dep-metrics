@@ -20,6 +20,7 @@ jobs:
       - name: Start
         uses: ./.github/actions/self
         with:
+          sigfx_token: ${{ secrets.SIGFX_ORG_TOKEN }}
           service: dep-metrics
           status: started
           result: pending
@@ -31,6 +32,7 @@ jobs:
       - name: Finish
         uses: ./.github/actions/self
         with:
+          sigfx_token: ${{ secrets.SIGFX_ORG_TOKEN }}
           service: dep-metrics
           status: finished
           result: ${{ steps.deploy.outcome }}
