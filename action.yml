@@ -68,7 +68,7 @@ runs:
             { "metric": "deployment",
               "value": 1,
               "dimensions": {
-                "environment": "production",
+                "environment": "$ENVIRONMENT",
                 "application": "$APPLICATION",
                 "service": "$SERVICE",
                 "status": "$STATUS",
