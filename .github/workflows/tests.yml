@@ -25,6 +25,13 @@ jobs:
           status: started
           result: pending
 
+      - name: Upload Payload
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Start Payload
+          path: payload.json
+
       - name: Fake deploy
         id: deploy
         run: echo "Deployed"
@@ -41,5 +48,5 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: payload.json
+          name: Finish Payload
           path: payload.json

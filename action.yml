@@ -50,6 +50,9 @@ runs:
         RESULT: ${{ inputs.result }}
         VERSION: ${{ inputs.release_version }}
       run: |
+        # remove payload each execution if exists
+        if [ -f payload.json ]; then rm -f payload.json; fi
+        
         # Use repo name for application if not set
         if [ -z $APPLICATION ]; then export APPLICATION=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//"); fi
 
