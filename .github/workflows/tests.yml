@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Check out self as repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: erzz/sigfx-dep-metrics
           ref: ${{ github.ref }}
